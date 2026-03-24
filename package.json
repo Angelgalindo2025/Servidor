@@ -1,0 +1,24 @@
+{
+  "name": "servidor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Angelgalindo2025/Servidor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Angelgalindo2025/Servidor/issues"
+  },
+  "homepage": "https://github.com/Angelgalindo2025/Servidor#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
