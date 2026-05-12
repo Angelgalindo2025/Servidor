@@ -1,9 +1,15 @@
 const express = require('express');
 const pool = require('./db');
 
-const app = express();
-app.use(express.json());    
+// 🔹 MongoDB
+const connectMongoDB = require('./mongoConnection');
+const Vehiculo = require('./Vehiculo');
 
+const app = express();
+app.use(express.json());
+
+// 🔹 Conexión MongoDB
+connectMongoDB();
 
 app.get('/', (req, res) => {
   res.send('API funcionando');
@@ -25,13 +31,13 @@ app.get('/alumnos', async (req, res) => {
 
 
 // =============================
-// 🔹 GET ALUMNO POR ID (NUEVO + VALIDACIÓN)
+// 🔹 GET ALUMNO POR ID
 // =============================
 app.get('/alumnos/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    // ✅ VALIDACIÓN
+    // Validación
     if (isNaN(id)) {
       return res.status(400).json({ error: 'El id debe ser numérico' });
     }
@@ -97,13 +103,13 @@ app.get('/materias', async (req, res) => {
 
 
 // =============================
-// 🔹 GET MATERIA POR ID (NUEVO + VALIDACIÓN)
+// 🔹 GET MATERIA POR ID
 // =============================
 app.get('/materias/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    // ✅ VALIDACIÓN
+    // Validación
     if (isNaN(id)) {
       return res.status(400).json({ error: 'El id debe ser numérico' });
     }
@@ -150,6 +156,77 @@ app.post('/materias', async (req, res) => {
   } catch (error) {
     console.error('Error al insertar materia:', error);
     res.status(500).json({ error: 'Error al insertar la materia' });
+  }
+});
+
+
+// =============================
+// 🔹 GET VEHICULOS (MongoDB)
+// =============================
+app.get('/api/getVehiculos', async (req, res) => {
+  try {
+
+    const vehiculos = await Vehiculo.find();
+
+    res.status(200).json({
+      message: 'Vehículos consultados correctamente',
+      data: vehiculos,
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: 'Error al consultar vehículos',
+      error: error.message,
+    });
+
+  }
+});
+
+
+// =============================
+// 🔹 POST VEHICULO (MongoDB)
+// =============================
+app.post('/api/createVehiculo', async (req, res) => {
+  try {
+
+    const { marca, modelo, anio, color } = req.body;
+
+    // Validación
+    if (!marca || !modelo || !anio || !color) {
+      return res.status(400).json({
+        message: 'Todos los campos son obligatorios',
+      });
+    }
+
+    // Validar año
+    if (isNaN(anio)) {
+      return res.status(400).json({
+        message: 'El año debe ser numérico',
+      });
+    }
+
+    const nuevoVehiculo = new Vehiculo({
+      marca,
+      modelo,
+      anio,
+      color,
+    });
+
+    await nuevoVehiculo.save();
+
+    res.status(201).json({
+      message: 'Vehículo creado correctamente',
+      data: nuevoVehiculo,
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: 'Error al crear vehículo',
+      error: error.message,
+    });
+
   }
 });
 
